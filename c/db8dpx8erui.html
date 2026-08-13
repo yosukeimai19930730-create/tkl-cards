@@ -28,17 +28,29 @@ var _q=new URLSearchParams(location.search),
 _u="https://kurashi-strategy.net/tkl-go/hit.php"+"?c=db8dpx8erui"+(_q.get("t")?"&t="+encodeURIComponent(_q.get("t")):"");
 var _send=function(){if(navigator.sendBeacon){navigator.sendBeacon(_u);}else{(new Image()).src=_u;}};
 var _ua=navigator.userAgent||"";
-/* アプリ内ブラウザ(Threads/Instagram等のWebView)はカスタムスキーム(aweme://)を
-   開けないため、AndroidはChrome(外部)で開き直す。attributionはlite.tiktok.comの
-   302先URLに載っているので、外部ブラウザ経由でも招待は成立する。 */
-if(/Android/i.test(_ua)&&/(Barcelona|Instagram|FBAN|FBAV|Line\/|KakaoTalk|MicroMessenger)/i.test(_ua)){
+var _android=/Android/i.test(_ua), _ios=/iPhone|iPad|iPod/i.test(_ua);
+/* TikTok Lite のディープリンク（spark_page=scan_code はQRスキャン/招待画面） */
+var _app="aweme://roma_redirect/?spark_page=scan_code";
+var _pkg="com.ss.android.ugc.tiktok.lite";
+_send();
+if(_android){
+  /* intent:// でアプリを直接起動（インストール済みユーザー）。
+     未インストールなら S.browser_fallback_url の lite.tiktok.com
+     （attribution付き）へ自動フォールバック。WebViewでもOSが処理する。 */
   try{
-    var _u2=new URL("https://lite.tiktok.com/t/ZS9hESWsVMPkv-mVUZg/");
-    var _intent="intent://"+_u2.host+_u2.pathname+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent("https://lite.tiktok.com/t/ZS9hESWsVMPkv-mVUZg/")+";end";
-    _send();location.replace(_intent);return;
-  }catch(e){}
+    location.replace("intent://roma_redirect/?spark_page=scan_code#Intent;scheme=aweme;package="+_pkg+";S.browser_fallback_url="+encodeURIComponent("https://lite.tiktok.com/t/ZS9hESWsVMPkv-mVUZg/")+";end");
+  }catch(e){_go();}
+}else if(_ios){
+  /* iOS: aweme:// を試し、アプリが起動しなければ（画面が残っていれば）Webへ。
+     アプリが起動した場合はページが非表示になり visibilitychange で発火を止める。 */
+  var _t=Date.now();
+  location.href=_app;
+  setTimeout(function(){
+    if(document.visibilityState!=="hidden"&&Date.now()-_t<2000){_go();}
+  },1200);
+}else{
+  _go();
 }
-_send();_go();
 }catch(e){_go();}</script>
 </body>
 </html>
