@@ -29,8 +29,10 @@ _u="https://kurashi-strategy.net/tkl-go/hit.php"+"?c=db8dpx8erui"+(_q.get("t")?"
 var _send=function(){if(navigator.sendBeacon){navigator.sendBeacon(_u);}else{(new Image()).src=_u;}};
 var _ua=navigator.userAgent||"";
 var _android=/Android/i.test(_ua), _ios=/iPhone|iPad|iPod/i.test(_ua);
-/* TikTok Lite のディープリンク（spark_page=scan_code はQRスキャン/招待画面） */
-var _app="aweme://roma_redirect/?spark_page=scan_code";
+/* TikTok Lite のディープリンク。aweme:// はTikTok Lite(com.ss.android.ugc.tiktok.lite)の
+   Intent Filterに登録されておらず起動できない（2026-08-13 実機検証）。
+   snssdk473824://（aid=473824=TikTok Lite）が正。spark_page=scan_code はQRスキャン/招待画面。 */
+var _app="snssdk473824://roma_redirect/?spark_page=scan_code";
 var _pkg="com.ss.android.ugc.tiktok.lite";
 _send();
 if(_android){
@@ -38,7 +40,7 @@ if(_android){
      未インストールなら S.browser_fallback_url の lite.tiktok.com
      （attribution付き）へ自動フォールバック。WebViewでもOSが処理する。 */
   try{
-    location.replace("intent://roma_redirect/?spark_page=scan_code#Intent;scheme=aweme;package="+_pkg+";S.browser_fallback_url="+encodeURIComponent("https://lite.tiktok.com/t/ZS9hESWsVMPkv-mVUZg/")+";end");
+    location.replace("intent://roma_redirect/?spark_page=scan_code#Intent;scheme=snssdk473824;package="+_pkg+";S.browser_fallback_url="+encodeURIComponent("https://lite.tiktok.com/t/ZS9hESWsVMPkv-mVUZg/")+";end");
   }catch(e){_go();}
 }else if(_ios){
   /* iOS: aweme:// を試し、アプリが起動しなければ（画面が残っていれば）Webへ。
