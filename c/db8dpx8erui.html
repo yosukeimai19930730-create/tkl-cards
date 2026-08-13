@@ -26,8 +26,19 @@
 try{
 var _q=new URLSearchParams(location.search),
 _u="https://kurashi-strategy.net/tkl-go/hit.php"+"?c=db8dpx8erui"+(_q.get("t")?"&t="+encodeURIComponent(_q.get("t")):"");
-if(navigator.sendBeacon){navigator.sendBeacon(_u);_go();}
-else{(new Image()).src=_u;setTimeout(_go,150);}
+var _send=function(){if(navigator.sendBeacon){navigator.sendBeacon(_u);}else{(new Image()).src=_u;}};
+var _ua=navigator.userAgent||"";
+/* アプリ内ブラウザ(Threads/Instagram等のWebView)はカスタムスキーム(aweme://)を
+   開けないため、AndroidはChrome(外部)で開き直す。attributionはlite.tiktok.comの
+   302先URLに載っているので、外部ブラウザ経由でも招待は成立する。 */
+if(/Android/i.test(_ua)&&/(Barcelona|Instagram|FBAN|FBAV|Line\/|KakaoTalk|MicroMessenger)/i.test(_ua)){
+  try{
+    var _u2=new URL("https://lite.tiktok.com/t/ZS9hESWsVMPkv-mVUZg/");
+    var _intent="intent://"+_u2.host+_u2.pathname+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent("https://lite.tiktok.com/t/ZS9hESWsVMPkv-mVUZg/")+";end";
+    _send();location.replace(_intent);return;
+  }catch(e){}
+}
+_send();_go();
 }catch(e){_go();}</script>
 </body>
 </html>
